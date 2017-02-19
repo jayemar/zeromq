@@ -22,8 +22,9 @@ class Publisher(object):
         except Exception as err:
             raise
 
-    def send(self, msg):
-        self.sock.send_string(msg)
+    def send(self, msg, address='default_address'):
+        self.sock.send_multipart([bytes(address, encoding='utf-8'),
+                bytes(msg, encoding='utf-8')])
 
     def die(self):
         self.sock.close()
@@ -36,7 +37,7 @@ if __name__ == '__main__':
         try:
             time.sleep(1.0)
             print("Sending message 'Hello World'")
-            pub.send("Hello World")
+            pub.send("Hello World", 'Thing1')
         except KeyboardInterrupt:
             pub.die()
             print('\r')
