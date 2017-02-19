@@ -16,10 +16,13 @@ except ValueError:
 
 context = zmq.Context.instance()
 sock = context.socket(zmq.REQ)
+sock.linger = 0
 
-sock.bind('tcp://*:' + str(port))
+print('Connecting to tcp://localhost:' + str(port))
+sock.connect('tcp://localhost:' + str(port))
 
-sock.send(b'Client message')
+print("Sending message to server")
+sock.send(bytes('Client message', encoding='ascii'))
 response = sock.recv()
 print("Response from Server: %s" % response)
 

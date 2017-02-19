@@ -2,6 +2,7 @@
 
 import sys
 import zmq
+from zmq.error import ZMQError
 
 def handle_reply(msg):
     print("Reply received")
@@ -11,14 +12,24 @@ try:
 except IndexError:
     port = 8888
 except ValueError:
-    print("ERROR: The port number must be in integer")
+    print("ERROR: The port number must be an integer")
     sys.exit(1)
 
-context = zmq.Context.instance()
-sock = context.socket(zmq.REQ)
+context = zmq.Context()
+sock = context.socket(zmq.REP)
 
-sock.connect('tcp://localhost:' + str(port))
+print('Attempting to bind to tcp://*:' + str(port))
+try:
+    sock.bind('tcp://*:' + str(port))
+except ZMQError as err:
+    print("Error binding socket: %s" % err)
+    sock.close()
+    context.destroy()
 
 message = sock.recv()
+print("Received message from client: %s" % str(message))
+print("Sending reply")
 sock.send(b'Rgr from server')
+sock.close()
+context.destroy()
 
