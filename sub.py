@@ -17,7 +17,7 @@ class Subscriber(object):
             self.callback = callback
             self.sock = context.socket(zmq.SUB)
             print('Connecting to tcp://' + ip + ':' + str(port))
-            self.sock.setsockopt_string(zmq.SUBSCRIBE, '')
+            self.sock.setsockopt(zmq.SUBSCRIBE, bytes('Thing1', encoding='utf-8'))
             self.sock.connect('tcp://' + ip + ':' + str(port))
         except Exception as err:
             raise
@@ -25,7 +25,7 @@ class Subscriber(object):
     def listen(self):
         while True:
             try:
-                msg = self.sock.recv()
+                [address, msg] = self.sock.recv_multipart()
                 self.callback(msg)
             except KeyboardInterrupt:
                 self.die()
@@ -38,7 +38,9 @@ class Subscriber(object):
 
 
 def print_test(msg):
-    print("Message received: %s" % msg)
+    sys.stdout.buffer.write(bytes("Message received: ", encoding='ascii')
+            + msg + bytes("\n", encoding='ascii'))
+    sys.stdout.buffer.flush()
 
 
 if __name__ == '__main__':
