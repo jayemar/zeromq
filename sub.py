@@ -34,6 +34,7 @@ class Subscriber(object):
 
     def die(self):
         self.sock.close()
+        self.ct.term()
         self.ctx.destroy()
 
 

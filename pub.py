@@ -41,6 +41,7 @@ class Publisher(object):
 
     def die(self):
         self.sock.close()
+        self.ctx.term()
         self.ctx.destroy()
 
     def status_manager(self, b, c):
